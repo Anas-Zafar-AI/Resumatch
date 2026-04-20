@@ -953,12 +953,14 @@ def page_analytics():
     )
     for candidate in st.session_state.candidates:
         badge_class = score_badge_class(candidate["score"])
+        verdict = candidate.get("verdict", "")
+        verdict_snippet = verdict[:60] + "…" if len(verdict) > 60 else verdict
         st.markdown(
             f"""
 <div class="candidate-row">
   <div>
     <div class="candidate-name">{candidate['name']}</div>
-    <div class="candidate-meta">{candidate['timestamp']} · {candidate.get('verdict','')[:60]}…</div>
+    <div class="candidate-meta">{candidate['timestamp']} · {verdict_snippet}</div>
   </div>
   <div><span class="{badge_class}">{candidate['score']}/100</span></div>
 </div>
@@ -988,7 +990,12 @@ def page_settings():
     )
 
     api_key = os.getenv("GROQ_API_KEY", "")
-    masked = ("•" * 20 + api_key[-6:]) if len(api_key) > 6 else ("Not configured" if not api_key else api_key)
+    if len(api_key) > 6:
+        masked = "•" * 20 + api_key[-6:]
+    elif api_key:
+        masked = api_key
+    else:
+        masked = "Not configured"
 
     st.markdown(
         f'<p style="font-size:0.85rem;color:#9898b8">GROQ API Key: '

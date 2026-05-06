@@ -1,4 +1,5 @@
 import pdfplumber
+import os
 
 def extract_text_from_pdf(pdf_path):
     text = ""
@@ -7,7 +8,10 @@ def extract_text_from_pdf(pdf_path):
             text += page.extract_text()
     return text
 
-# Test karo
-if __name__ == "__main__":
-    text = extract_text_from_pdf("sample_resumes/sample_resume.pdf")
-    print(text)
+def load_all_resumes(folder_path):
+    resumes = {}
+    for filename in os.listdir(folder_path):
+        if filename.endswith(".pdf"):
+            full_path = os.path.join(folder_path, filename)
+            resumes[filename] = extract_text_from_pdf(full_path)
+    return resumes
